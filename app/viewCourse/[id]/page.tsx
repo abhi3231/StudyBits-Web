@@ -27,9 +27,7 @@ import { AppSidebar } from "@/components/app-sidebar";
 import {
   IconCircle,
   IconCircleCheckFilled,
-  IconPlus,
   IconQuestionMark,
-  IconTrash,
 } from "@tabler/icons-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { deleteLearning } from "@/services/deleteCourseUnitData";

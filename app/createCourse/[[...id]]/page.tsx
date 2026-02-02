@@ -87,6 +87,15 @@ export default function CreateCoursePage() {
         }
         router.push(`/manageCourse/${course.key}`);
       }
+      else {
+        if (isInParamMode && originalCourse) {
+          await handleEditCourse([]);
+        } else {
+          await handleCreateCourse([]);
+        }
+        router.push(`/manageCourse/${course.key}`);
+      }
+  
     } catch (error) {
       console.error("Error submitting course:", error);
     } finally {

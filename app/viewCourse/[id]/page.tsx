@@ -119,7 +119,7 @@ export default function ViewCoursesPage() {
       user.uid,
       id,
       studyingUnits,
-      unitId
+      unitId,
     );
     setStudyingUnits(updated);
   };
@@ -191,15 +191,21 @@ export default function ViewCoursesPage() {
                   Course Details
                 </h1>
                 {!studiedCourse ? (
-                  <IconPlus
-                    className="w-6 h-6 text-blue-400 cursor-pointer"
+                  <button
                     onClick={handleAddCourse}
-                  />
+                    className="px-4 py-2 rounded-lg bg-teal-600 text-white font-medium
+                 hover:bg-teal-500 transition shadow-sm"
+                  >
+                    + Add Course
+                  </button>
                 ) : (
-                  <IconTrash
-                    className="w-6 h-6 text-red-500 cursor-pointer"
+                  <button
                     onClick={handleDeleteCourse}
-                  />
+                    className="px-4 py-2 rounded-lg bg-red-600 text-white font-medium
+                 hover:bg-red-500 transition shadow-sm"
+                  >
+                    Remove Course
+                  </button>
                 )}
               </div>
             </CardContent>

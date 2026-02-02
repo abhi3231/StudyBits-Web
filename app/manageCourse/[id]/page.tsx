@@ -113,6 +113,9 @@ export default function ManageCoursePage() {
       if ("tags" in tags && tags.tags.length > 0) {
         await saveUnit(id, cleanUnit, tags.tags);
       }
+      else {
+        await saveUnit(id, cleanUnit, []);
+      }
     }
 
     setUnits((prev) =>

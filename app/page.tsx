@@ -12,6 +12,7 @@ import {
   getCoursesWithMostViews,
 } from "@/services/courseUnitData";
 import { Course } from "@/utils/interfaces";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
@@ -53,6 +54,23 @@ export default function HomepPage() {
     >
       <AppSidebar variant="inset" />
       <SidebarInset className="p-6 space-y-6 min-h-screen">
+        {user?.isAnonymous && user?.uid && (
+          <Card className="border border-teal-700/50 bg-teal-950/40">
+            <CardContent className="p-4">
+              <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
+                <div className="text-sm text-teal-100">
+                  You are browsing as a guest. Sign in to save your progress.
+                </div>
+                <Link
+                  href={`/signin?anonUid=${encodeURIComponent(user.uid)}`}
+                  className="inline-flex items-center justify-center rounded-lg bg-teal-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-teal-700"
+                >
+                  Sign in
+                </Link>
+              </div>
+            </CardContent>
+          </Card>
+        )}
         <SiteHeader />
         <Card className="bg-[var(--card)] border border-zinc-800">
           <CardContent className="p-4">

@@ -38,9 +38,9 @@ export default function CreateChannelPage() {
         setChannel(channel);
         router.replace("/channel");
       }
+      setDefaultProfilePicUrl(`https://robohash.org/${user?.uid}`);
     }
     checkChannel();
-    setDefaultProfilePicUrl(`https://robohash.org/${user?.uid}`);
   }, [router, user?.uid]);
 
   const handleImageChange =

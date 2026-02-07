@@ -13,7 +13,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
-import { signInWithGoogle, signUp } from "@/firebase/firebaseAuth";
+import { signInAnonymousUser, signInWithGoogle, signUp } from "@/firebase/firebaseAuth";
 import { useState } from "react";
 import { useRouter } from "next/compat/router";
 import LoadingScreen from "@/components/loading";
@@ -50,6 +50,18 @@ export default function SignupPage() {
     try {
       setLoading(true);
       await signInWithGoogle();
+      if (router) router.push("/");
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const anonymousSignIn = async () => {
+    try {
+      setLoading(true);
+      await signInAnonymousUser();
       if (router) router.push("/");
     } catch (error) {
       console.error(error);
@@ -167,6 +179,14 @@ export default function SignupPage() {
                 <path d="M1 1h22v22H1z" fill="none" />
               </svg>
               Sign up with Google
+            </Button>
+
+            <Button
+              className="mt-4 w-full text-white bg-zinc-900 hover:bg-zinc-800"
+              size="lg"
+              onClick={anonymousSignIn}
+            >
+              Continue without sign in
             </Button>
           </CardFooter>
         </Card>

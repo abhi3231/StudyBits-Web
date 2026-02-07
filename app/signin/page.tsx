@@ -13,19 +13,32 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
-import { signIn, signInWithGoogle } from "@/firebase/firebaseAuth";
+import { useAuth } from "@/hooks/authContext";
+import { signIn, signInAnonymousUser, signInWithGoogle } from "@/firebase/firebaseAuth";
+import { EmailAuthProvider, GoogleAuthProvider, linkWithCredential, linkWithPopup } from "firebase/auth";
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 
 export default function SigninPage() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [displayError, setDisplayError] = useState("");
+  const { user } = useAuth();
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const anonUid = searchParams.get("anonUid");
+  const shouldLinkAnonymous = Boolean(
+    user?.isAnonymous && (!anonUid || anonUid === user.uid)
+  );
 
   const signInUsernamePassword = async () => {
     try {
-      await signIn(username, password);
+      if (shouldLinkAnonymous && user) {
+        const credential = EmailAuthProvider.credential(username, password);
+        await linkWithCredential(user, credential);
+      } else {
+        await signIn(username, password);
+      }
       router.push("/");
     } catch (error) {
       console.error(error);
@@ -39,11 +52,30 @@ export default function SigninPage() {
 
   const googleSignIn = async () => {
     try {
-      await signInWithGoogle();
+      if (shouldLinkAnonymous && user) {
+        const provider = new GoogleAuthProvider();
+        await linkWithPopup(user, provider);
+      } else {
+        await signInWithGoogle();
+      }
       router.push("/");
     } catch (error) {
       console.error(error);
+      if (error instanceof Error) {
+        setDisplayError(error.message);
+      } else {
+        setDisplayError("Something went wrong.");
+      }
     } finally {
+    }
+  };
+
+  const anonymousSignIn = async () => {
+    try {
+      await signInAnonymousUser();
+      router.push("/");
+    } catch (error) {
+      console.error(error);
     }
   };
 
@@ -137,6 +169,14 @@ export default function SigninPage() {
                 <path d="M1 1h22v22H1z" fill="none" />
               </svg>
               Sign in with Google
+            </Button>
+
+            <Button
+              className="mt-4 w-full bg-zinc-900 text-white hover:bg-zinc-800"
+              size="lg"
+              onClick={anonymousSignIn}
+            >
+              Continue without sign in
             </Button>
           </CardFooter>
         </Card>

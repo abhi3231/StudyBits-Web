@@ -2,6 +2,7 @@ import { auth } from './firebase';
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
+  signInAnonymously,
   signInWithPopup,
   GoogleAuthProvider,
   signOut,
@@ -51,6 +52,21 @@ export const signInWithGoogle = async (): Promise<User> => {
     } else {
       console.error('Unknown error during Google sign-in');
       throw new Error('Unknown error during Google sign-in');
+    }
+  }
+};
+
+export const signInAnonymousUser = async (): Promise<User> => {
+  try {
+    const userCredential = await signInAnonymously(auth);
+    return userCredential.user;
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      console.error('Error signing in anonymously:', error.message);
+      throw error;
+    } else {
+      console.error('Unknown error during anonymous sign-in');
+      throw new Error('Unknown error during anonymous sign-in');
     }
   }
 };

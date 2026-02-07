@@ -199,8 +199,8 @@ export default function ViewCoursesPage() {
                 ) : (
                   <button
                     onClick={handleDeleteCourse}
-                    className="px-4 py-2 rounded-lg bg-red-600 text-white font-medium
-                 hover:bg-red-500 transition shadow-sm"
+                    className="px-4 py-2 rounded-lg border border-teal-600 bg-zinc-800 text-white font-medium
+                 transition shadow-sm"
                   >
                     Remove Course
                   </button>

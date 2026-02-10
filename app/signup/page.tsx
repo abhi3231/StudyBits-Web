@@ -13,10 +13,13 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
-import { signInAnonymousUser, signInWithGoogle, signUp } from "@/firebase/firebaseAuth";
-import { useState } from "react";
-import { useRouter } from "next/compat/router";
+import { signIn, signInAnonymousUser, signInWithGoogle, signUp } from "@/firebase/firebaseAuth";
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import LoadingScreen from "@/components/loading";
+import { useAuth } from "@/hooks/authContext";
+import { EmailAuthProvider, GoogleAuthProvider, linkWithCredential, linkWithPopup } from "firebase/auth";
+import { FirebaseError } from "firebase/app";
 
 export default function SignupPage() {
   const [username, setUsername] = useState("");
@@ -25,13 +28,36 @@ export default function SignupPage() {
   const [loading, setLoading] = useState(false);
   const [displayError, setDisplayError] = useState("");
   const router = useRouter();
+  const { user } = useAuth();
+  const [linkAnonAllowed, setLinkAnonAllowed] = useState(true);
+  const shouldLinkAnonymous = Boolean(linkAnonAllowed && user?.isAnonymous);
+
+  useEffect(() => {
+    const navigationEntry = performance.getEntriesByType("navigation")[0] as PerformanceNavigationTiming | undefined;
+    if (navigationEntry?.type === "reload") {
+      setLinkAnonAllowed(false);
+    }
+  }, []);
 
   const createAccount = async () => {
     if (username && password && password === confirmedPassword) {
       try {
         setLoading(true);
-        await signUp(username, password);
-        if (router) router.push("/");
+        if (shouldLinkAnonymous && user) {
+          const credential = EmailAuthProvider.credential(username, password);
+          try {
+            await linkWithCredential(user, credential);
+          } catch (error) {
+            if (error instanceof FirebaseError && error.code === "auth/credential-already-in-use") {
+              await signIn(username, password);
+            } else {
+              throw error;
+            }
+          }
+        } else {
+          await signUp(username, password);
+        }
+        router.push("/");
       } catch (error) {
         console.error(error);
         if (error instanceof Error) {
@@ -41,7 +67,6 @@ export default function SignupPage() {
         }
       } finally {
         setLoading(false);
-        if (router) router.push("/");
       }
     }
   };
@@ -49,8 +74,21 @@ export default function SignupPage() {
   const googleSignIn = async () => {
     try {
       setLoading(true);
-      await signInWithGoogle();
-      if (router) router.push("/");
+      if (shouldLinkAnonymous && user) {
+        const provider = new GoogleAuthProvider();
+        try {
+          await linkWithPopup(user, provider);
+        } catch (error) {
+          if (error instanceof FirebaseError && error.code === "auth/credential-already-in-use") {
+            await signInWithGoogle();
+          } else {
+            throw error;
+          }
+        }
+      } else {
+        await signInWithGoogle();
+      }
+      router.push("/");
     } catch (error) {
       console.error(error);
     } finally {
@@ -83,6 +121,11 @@ export default function SignupPage() {
           <p className="text-muted-foreground">
             Enter your information to get started
           </p>
+          {shouldLinkAnonymous && (
+            <p className="text-xs text-muted-foreground">
+              Leaving this page or refreshing will reset your progress.
+            </p>
+          )}
 
           {displayError && <p className="text-red-50">{displayError}</p>}
         </div>

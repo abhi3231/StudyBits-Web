@@ -13,32 +13,19 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
-import { useAuth } from "@/hooks/authContext";
 import { signIn, signInAnonymousUser, signInWithGoogle } from "@/firebase/firebaseAuth";
-import { EmailAuthProvider, GoogleAuthProvider, linkWithCredential, linkWithPopup } from "firebase/auth";
 import { useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 
 export default function SigninPage() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [displayError, setDisplayError] = useState("");
-  const { user } = useAuth();
   const router = useRouter();
-  const searchParams = useSearchParams();
-  const anonUid = searchParams.get("anonUid");
-  const shouldLinkAnonymous = Boolean(
-    user?.isAnonymous && (!anonUid || anonUid === user.uid)
-  );
 
   const signInUsernamePassword = async () => {
     try {
-      if (shouldLinkAnonymous && user) {
-        const credential = EmailAuthProvider.credential(username, password);
-        await linkWithCredential(user, credential);
-      } else {
-        await signIn(username, password);
-      }
+      await signIn(username, password);
       router.push("/");
     } catch (error) {
       console.error(error);
@@ -52,12 +39,7 @@ export default function SigninPage() {
 
   const googleSignIn = async () => {
     try {
-      if (shouldLinkAnonymous && user) {
-        const provider = new GoogleAuthProvider();
-        await linkWithPopup(user, provider);
-      } else {
-        await signInWithGoogle();
-      }
+      await signInWithGoogle();
       router.push("/");
     } catch (error) {
       console.error(error);

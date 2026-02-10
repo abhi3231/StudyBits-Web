@@ -3,6 +3,7 @@
 import * as React from "react";
 import {
   IconHome,
+  IconBrandGithub,
   IconPencil,
   IconQuestionMark,
   IconUsersGroup,
@@ -74,6 +75,20 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <NavMain items={data.navMain} />
       </SidebarContent>
       <SidebarFooter>
+        <SidebarMenu>
+          <SidebarMenuItem>
+            <SidebarMenuButton asChild>
+              <Link
+                href="https://github.com/abhi3231/StudyBits-Web"
+                target="_blank"
+                rel="noreferrer"
+              >
+                <IconBrandGithub className="size-4" />
+                <span>abhi3231/StudyBits-Web</span>
+              </Link>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+        </SidebarMenu>
         <NavUser user={data.user} />
       </SidebarFooter>
     </Sidebar>

@@ -27,6 +27,7 @@ export interface Course {
   lastModified: number;
   numQuestions: number;
   numSubscribers?: number;
+  views?: number;
 }
 
 export const defaultCourse: Course = {

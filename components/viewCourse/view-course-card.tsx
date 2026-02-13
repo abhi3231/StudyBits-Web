@@ -69,11 +69,17 @@ export function ViewCourseCard({
               </p>
             )}
 
-            <div className="flex flex-wrap items-center gap-4 mt-2 text-zinc-400 text-sm">
+            <div className="flex flex-col items-start gap-1 mt-2 text-zinc-400 text-sm">
               {course.numSubscribers !== undefined && (
                 <div className="flex items-center gap-1">
                   {course.numSubscribers}
                   {" subscribers"}
+                </div>
+              )}
+              {course.views !== undefined && (
+                <div className="flex items-center gap-1">
+                  {course.views}
+                  {" views"}
                 </div>
               )}
             </div>

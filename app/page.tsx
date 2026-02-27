@@ -76,7 +76,7 @@ export default function HomepPage() {
           <CardContent className="p-4">
             <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
               <h1 className="text-2xl font-semibold text-white">
-                What I&apos;m learining
+                What I&apos;m learning
               </h1>
 
               <form

@@ -24,16 +24,13 @@ import { fetchUnitsAndCourseCreator } from "@/services/courseUnitData";
 import { getChannelData } from "@/services/channelHelpers";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/app-sidebar";
-import {
-  IconCircle,
-  IconCircleCheckFilled,
-  IconQuestionMark,
-} from "@tabler/icons-react";
+import { IconCircle, IconCircleCheckFilled } from "@tabler/icons-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { deleteLearning } from "@/services/deleteCourseUnitData";
 import { CourseDialog } from "@/components/course-unit-selector";
 import { cacheSubscribedCourses } from "@/services/cacheServices";
 import { SiteHeader } from "@/components/site-header";
+import { ViewQuestions } from "@/components/view-questions";
 
 export default function ViewCoursesPage() {
   const { id } = useParams();
@@ -50,6 +47,7 @@ export default function ViewCoursesPage() {
   const [channel, setChannel] = useState<Channel | null>(null);
   const [notFoundError, setNotFoundError] = useState(false);
   const [courseOpen, setCourseOpen] = useState(false);
+  const [selectedUnitId, setSelectedUnitId] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchCourseData = async () => {
@@ -155,8 +153,9 @@ export default function ViewCoursesPage() {
     }
   };
 
-  const viewQuestionsRedirect = (courseId: string, unitId: string) => {
-    router.push(`/viewQuestions/${courseId}/${unitId}`);
+  const handleUnitPress = (unitId: string) => {
+    if (typeof id !== "string") return;
+    setSelectedUnitId((prev) => (prev === unitId ? null : unitId));
   };
 
   if (notFoundError) {
@@ -238,8 +237,13 @@ export default function ViewCoursesPage() {
               <div className="space-y-3 rounded-lg bg-[var(--card)] p-4 w-full">
                 {units.map((unit) => (
                   <div
-                    className="flex items-center gap-4 bg-[var(--card)] rounded-xl p-4 shadow-sm border border-zinc-600"
+                    className={`flex items-center gap-4 bg-[var(--card)] rounded-xl p-4 shadow-sm border cursor-pointer transition ${
+                      selectedUnitId === unit.key
+                        ? "border-teal-500"
+                        : "border-zinc-600 hover:border-teal-500"
+                    }`}
                     key={unit.key}
+                    onClick={() => handleUnitPress(unit.key)}
                   >
                     {studiedCourse && isSwitchOn && (
                       <button onClick={() => handleUnitToggle(unit.key)}>
@@ -264,20 +268,22 @@ export default function ViewCoursesPage() {
                         </p>
                       )}
                     </div>
-
-                    <button
-                      onClick={() =>
-                        viewQuestionsRedirect(id as string, unit.key)
-                      }
-                      className="text-zinc-400 hover:text-teal-400 transition self-center"
-                    >
-                      <IconQuestionMark size={30} />
-                    </button>
                   </div>
                 ))}
               </div>
             ) : (
               <p className="text-sm text-zinc-400">No units available.</p>
+            )}
+
+            <h2 className="text-xl font-semibold text-white">Questions</h2>
+            {!selectedUnitId && (
+              <p className="text-sm text-zinc-400">
+                Click on a unit to view questions
+              </p>
+            )}
+
+            {typeof id === "string" && selectedUnitId && (
+              <ViewQuestions courseId={id} unitId={selectedUnitId} />
             )}
           </div>
 

@@ -16,7 +16,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
-export default function HomepPage() {
+export default function HomePage() {
   const { user } = useAuth();
   const [learningCourses, setLearningCourses] = useState<string[] | null>(null);
   const [trendingCourses, setTrendingCourses] = useState<Course[]>([]);

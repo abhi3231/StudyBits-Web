@@ -43,10 +43,10 @@ export default function QuestionPortal() {
   const [id, setId] = useState("");
   const [answers, setAnswers] = useState<Answer[]>([]);
   const [hints, setHints] = useState<Hint[]>([]);
-  const [origionalHints, setOrigionalHints] = useState<Hint[]>([]);
+  const [originalHints, setOriginalHints] = useState<Hint[]>([]);
   const [editingHint, setEditingHint] = useState<Hint | null>(null);
-  const [origionalCourse, setOrigionalCourse] = useState<string>("");
-  const [oritionalUnit, setOrigionalUnit] = useState<string>("");
+  const [originalCourse, setOriginalCourse] = useState<string>("");
+  const [originalUnit, setOriginalUnit] = useState<string>("");
   const [selectedCourse, setSelectedCourse] = useState<Course | null>(null);
   const [selectedUnit, setSelectedUnit] = useState<Unit | null>(null);
   const [question, setQuestion] = useState<string>("");
@@ -130,10 +130,10 @@ export default function QuestionPortal() {
 
         setAnswers(questionData.answers || []);
         setHints(questionData.hints || []);
-        setOrigionalHints(questionData.hints || []);
+        setOriginalHints(questionData.hints || []);
         setQuestion(questionData.question || "");
-        setOrigionalCourse(questionCourse || "");
-        setOrigionalUnit(questionUnit || "");
+        setOriginalCourse(questionCourse || "");
+        setOriginalUnit(questionUnit || "");
         setSelectedCourse(course || null);
         setSelectedUnit(unit);
       } catch (error) {
@@ -223,19 +223,19 @@ export default function QuestionPortal() {
           id: id,
           question: question.trim(),
           hints: hints,
-          oldHints: origionalHints,
+          oldHints: originalHints,
           answers,
           course: selectedCourse.key,
           unit: selectedUnit.key,
-          oldCourse: origionalCourse,
-          oldUnit: oritionalUnit,
+          oldCourse: originalCourse,
+          oldUnit: originalUnit,
         };
         status = await submitEditedQuestion(editingQuestion);
       }
 
       if (status === "error") {
         alert(
-          "There was an error! Most likley, you are editing an invalid question."
+          "There was an error! Most likely, you are editing an invalid question."
         );
         setLoading(false);
       } else {
@@ -246,7 +246,7 @@ export default function QuestionPortal() {
           router.push(`/questionPortal/publish/${status.id}`);
         } else {
           alert(
-            "Your question was saved, but there wasn an error! Save it again."
+            "Your question was saved, but there was an error! Save it again."
           );
         }
         setLoading(false);
@@ -269,7 +269,7 @@ export default function QuestionPortal() {
       });
       if (status === "error") {
         alert(
-          "There was an error! Most likley, you did not select a course and unit."
+          "There was an error! Most likely, you did not select a course and unit."
         );
         setLoading(false);
       }
@@ -285,7 +285,7 @@ export default function QuestionPortal() {
 
   const handleEditingDraft = async () => {
     setLoading(true);
-    const fullHints = await handleHintImages(hints, origionalHints);
+    const fullHints = await handleHintImages(hints, originalHints);
     if (selectedCourse && selectedUnit) {
       setQuestionType("draft");
       const status = await editDraft({
@@ -295,13 +295,13 @@ export default function QuestionPortal() {
         answers,
         course: selectedCourse.key,
         unit: selectedUnit.key,
-        oldCourse: origionalCourse,
-        oldUnit: oritionalUnit,
+        oldCourse: originalCourse,
+        oldUnit: originalUnit,
       });
       if (status === "error") {
         setLoading(false);
         alert(
-          "There was an error! Most likley, you did not select a course and unit."
+          "There was an error! Most likely, you did not select a course and unit."
         );
       }
       if (status === "success") {
@@ -329,7 +329,7 @@ export default function QuestionPortal() {
       } else {
         setLoading(false);
         alert(
-          "Your question was saved, but there wasn an error! Save it again."
+          "Your question was saved, but there was an error! Save it again."
         );
       }
     }

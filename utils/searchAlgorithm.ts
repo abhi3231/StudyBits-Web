@@ -7,42 +7,36 @@ interface CourseItem {
   description: string;
 }
 
-const searchCourses = async (
+export const searchCourses = async (
   query: string,
-  limit: number = 10
+  limit: number = 10,
 ): Promise<string[]> => {
   try {
-    const coursesRef = collection(db, "courses");
-    const snapshot = await getDocs(coursesRef);
+    const snapshot = await getDocs(collection(db, "courses"));
+    const searchTerm = query.trim().toLowerCase();
+    if (!searchTerm) return [];
 
-    const searchTerm = query.toLowerCase();
+    const matched = snapshot.docs
+      .map((doc) => {
+        const data = doc.data() as Partial<CourseItem>;
 
-    const allCourses: CourseItem[] = snapshot.docs.map(
-      (doc) => doc.data() as CourseItem
-    );
+        const name = (data.name ?? "").toLowerCase();
+        const description = (data.description ?? "").toLowerCase();
 
-    const matchedCourses = allCourses
-      .map((course) => {
         let score = 0;
-        const name = course.name.toLowerCase();
-        const description = course.description.toLowerCase();
-
         if (name.includes(searchTerm)) score += 2;
         if (description.includes(searchTerm)) score += 1;
 
-        return { id: course.key, score };
+        const id = (data.key ?? doc.id) as string;
+        return { id, score };
       })
-      .filter((course) => course.score > 0);
-
-    const sortedCourses = matchedCourses
+      .filter((c) => c.score > 0)
       .sort((a, b) => b.score - a.score)
       .slice(0, limit);
 
-    return sortedCourses.map((course) => course.id);
+    return matched.map((c) => c.id);
   } catch (error) {
     console.error("Error searching courses:", error);
     return [];
   }
 };
-
-export { searchCourses };

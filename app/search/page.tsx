@@ -18,6 +18,7 @@ export default function ResultsPage() {
 
   useEffect(() => {
     if (queryParam) {
+      // eslint-disable-next-line react-hooks/immutability
       runSearch(queryParam);
     }
   }, [queryParam]);
